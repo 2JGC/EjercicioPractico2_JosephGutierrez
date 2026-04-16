@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+<header th:replace="~{general/fragmentos :: header}"></header>
+
+<div class="container my-4" style="max-width: 600px;">
+    <div class="d-flex align-items-center mb-4">
+        <a th:href="@{/usuario/listado}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold mb-0"><i class="fas fa-user me-2"></i>Detalle del Usuario</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-header text-white" style="background:#1a237e;">
+            <h5 class="mb-0" th:text="${usuario.nombre}"></h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">ID</dt>
+                <dd class="col-sm-8" th:text="${usuario.idUsuario}"></dd>
+
+                <dt class="col-sm-4">Nombre</dt>
+                <dd class="col-sm-8" th:text="${usuario.nombre}"></dd>
+
+                <dt class="col-sm-4">Correo</dt>
+                <dd class="col-sm-8" th:text="${usuario.email}"></dd>
+
+                <dt class="col-sm-4">Rol</dt>
+                <dd class="col-sm-8">
+                    <span th:if="${usuario.rol != null}"
+                          class="badge rounded-pill"
+                          th:classappend="${usuario.rol.nombre == 'ADMIN'} ? 'bg-danger' : (${usuario.rol.nombre == 'ORGANIZADOR'} ? 'bg-warning text-dark' : 'bg-success')"
+                          th:text="${usuario.rol.nombre}"></span>
+                </dd>
+
+                <dt class="col-sm-4">Estado</dt>
+                <dd class="col-sm-8">
+                    <span th:if="${usuario.activo}" class="badge bg-success">Activo</span>
+                    <span th:unless="${usuario.activo}" class="badge bg-secondary">Inactivo</span>
+                </dd>
+
+                <dt class="col-sm-4">Registro</dt>
+                <dd class="col-sm-8" th:text="${#temporals.format(usuario.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a th:href="@{/usuario/modificar/{id}(id=${usuario.idUsuario})}"
+               class="btn btn-primary me-2">
+                <i class="fas fa-edit me-1"></i>Editar
+            </a>
+            <a th:href="@{/usuario/listado}" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i>Volver al listado
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

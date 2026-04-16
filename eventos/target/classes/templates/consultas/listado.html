@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+<header th:replace="~{general/fragmentos :: header}"></header>
+<div th:replace="~{general/fragmentos :: toast}"></div>
+
+<div class="container my-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-search me-2"></i>Consultas Avanzadas</h2>
+
+    <!-- Estadística rápida -->
+    <div class="alert alert-info d-flex align-items-center mb-4">
+        <i class="fas fa-info-circle fa-2x me-3"></i>
+        <span>Total de eventos activos en el sistema: <strong th:text="${totalActivos}">0</strong></span>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Consulta 1: Por estado -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header text-white" style="background:#1a237e;">
+                    <i class="fas fa-toggle-on me-1"></i> Consulta 1: Eventos por Estado
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/consultas/porEstado}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Estado del Evento</label>
+                            <select name="activo" class="form-select">
+                                <option value="true">Activos</option>
+                                <option value="false">Inactivos</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consulta 2: Por rango de fechas -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header text-white" style="background:#1a237e;">
+                    <i class="fas fa-calendar-range me-1"></i> Consulta 2: Eventos por Rango de Fechas (JPQL)
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/consultas/porFechas}" method="post">
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Fecha inicio</label>
+                            <input type="date" name="inicio" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Fecha fin</label>
+                            <input type="date" name="fin" class="form-control" required/>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consulta 3: Usuarios por Rol -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header text-white" style="background:#1a237e;">
+                    <i class="fas fa-users me-1"></i> Consulta 3: Usuarios por Rol
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/consultas/usuariosPorRol}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Seleccionar Rol</label>
+                            <select name="idRol" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r.idRol}"
+                                        th:text="${r.nombre}"></option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consulta 4: Por nombre -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header text-white" style="background:#1a237e;">
+                    <i class="fas fa-font me-1"></i> Consulta 4: Eventos por Nombre
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/consultas/porNombre}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre (parcial)</label>
+                            <input type="text" name="nombre" class="form-control"
+                                   placeholder="Ej: Conferencia" required/>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados de eventos -->
+    <div th:if="${resultados != null}" class="mt-5">
+        <h4 class="fw-bold">
+            <i class="fas fa-list-ul me-2"></i>
+            Resultados: <span th:text="${tipoConsulta}" class="text-primary"></span>
+        </h4>
+        <div class="card mt-3">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Fecha</th>
+                            <th>Capacidad</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${resultados}">
+                            <td th:text="${e.idEvento}"></td>
+                            <td th:text="${e.nombre}"></td>
+                            <td th:text="${#temporals.format(e.fecha, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${e.capacidad}"></td>
+                            <td>
+                                <span th:if="${e.activo}" class="badge bg-success">Activo</span>
+                                <span th:unless="${e.activo}" class="badge bg-secondary">Inactivo</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(resultados)}">
+                            <td colspan="5" class="text-center text-muted py-3">Sin resultados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados de usuarios por rol -->
+    <div th:if="${usuariosResultado != null}" class="mt-5">
+        <h4 class="fw-bold">
+            <i class="fas fa-list-ul me-2"></i>
+            Resultados: <span th:text="${tipoConsulta}" class="text-primary"></span>
+        </h4>
+        <div class="card mt-3">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${usuariosResultado}">
+                            <td th:text="${u.idUsuario}"></td>
+                            <td th:text="${u.nombre}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td>
+                                <span th:if="${u.activo}" class="badge bg-success">Activo</span>
+                                <span th:unless="${u.activo}" class="badge bg-secondary">Inactivo</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(usuariosResultado)}">
+                            <td colspan="4" class="text-center text-muted py-3">Sin resultados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

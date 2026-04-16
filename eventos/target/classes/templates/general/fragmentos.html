@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <!-- HEAD -->
+    <head th:fragment="head">
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Gestión de Eventos</title>
+        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+        <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <style>
+            body { background-color: #f8f9fa; }
+            .navbar-brand { font-weight: bold; font-size: 1.4rem; }
+            .hero-section { background: linear-gradient(135deg, #1a237e, #283593); color: white; padding: 60px 0; }
+            .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 12px; }
+            .table thead th { background-color: #1a237e; color: white; }
+            footer { background-color: #1a237e; color: white; }
+            .btn-primary { background-color: #1a237e; border-color: #1a237e; }
+            .btn-primary:hover { background-color: #283593; border-color: #283593; }
+        </style>
+    </head>
+
+    <!-- HEADER / NAVBAR -->
+    <header th:fragment="header">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1a237e;">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/}">
+                    <i class="fas fa-calendar-alt me-2"></i>EventosApp
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}"><i class="fas fa-home me-1"></i>Inicio</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/evento/listado}">
+                                <i class="fas fa-calendar me-1"></i>Eventos
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/consultas/listado}">
+                                <i class="fas fa-search me-1"></i>Consultas
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-shield-alt me-1"></i>Administración
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" th:href="@{/usuario/listado}">
+                                    <i class="fas fa-users me-1"></i>Usuarios</a></li>
+                                <li><a class="dropdown-item" th:href="@{/rol/listado}">
+                                    <i class="fas fa-tags me-1"></i>Roles</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item" sec:authorize="!isAuthenticated()">
+                            <a class="nav-link" th:href="@{/login}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span sec:authentication="name"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <form method="post" th:action="@{/logout}" class="d-inline">
+                                <button class="btn nav-link text-white" type="submit">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Salir
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- FOOTER -->
+    <footer th:fragment="footer" class="py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="fas fa-calendar-alt me-1"></i>
+                EventosApp &copy; 2026 - Plataforma de Reservas de Eventos
+            </p>
+        </div>
+    </footer>
+
+    <!-- TOAST de mensajes -->
+    <div th:fragment="toast"
+         class="position-fixed top-50 start-50 translate-middle"
+         style="z-index: 1080;">
+        <div th:if="${error}" class="toast show" role="alert" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <p th:text="${error}"></p>
+            </div>
+        </div>
+        <div th:if="${todoOk}" class="toast show" role="status" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Éxito</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <p th:text="${todoOk}"></p>
+            </div>
+        </div>
+    </div>
+
+</html>

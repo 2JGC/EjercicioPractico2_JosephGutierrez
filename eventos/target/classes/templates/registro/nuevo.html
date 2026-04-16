@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body class="d-flex align-items-center justify-content-center"
+      style="min-height:100vh; background: linear-gradient(135deg,#1a237e,#283593);">
+
+<div class="card p-4" style="width:100%;max-width:480px;">
+    <div class="text-center mb-4">
+        <i class="fas fa-user-plus fa-3x mb-2" style="color:#1a237e;"></i>
+        <h3 class="fw-bold">Crear Cuenta</h3>
+        <p class="text-muted">Regístrate como invitado en EventosApp</p>
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+    </div>
+    <div th:if="${todoOk}" class="alert alert-success">
+        <i class="fas fa-check-circle me-1"></i>
+        <span th:text="${todoOk}"></span>
+    </div>
+
+    <form th:action="@{/registro/guardar}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre Completo</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" name="nombre" class="form-control"
+                       placeholder="Tu nombre completo" required/>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Correo Electrónico</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control"
+                       placeholder="correo@ejemplo.com" required/>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Contraseña</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password" class="form-control"
+                       placeholder="••••••••" required/>
+            </div>
+        </div>
+
+        <!-- Indicador de rol asignado -->
+        <div class="alert alert-info py-2 mb-3">
+            <i class="fas fa-info-circle me-1"></i>
+            Tu cuenta será creada con rol <strong>CLIENTE</strong>.
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">
+            <i class="fas fa-user-plus me-1"></i> Registrarme
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+        <span class="text-muted small">¿Ya tienes cuenta?</span>
+        <a th:href="@{/login}" class="ms-1 small fw-semibold">Iniciar Sesión</a>
+    </div>
+    <div class="text-center mt-2">
+        <a th:href="@{/}" class="text-muted small">
+            <i class="fas fa-arrow-left me-1"></i>Volver al inicio
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

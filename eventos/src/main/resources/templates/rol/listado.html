@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+<header th:replace="~{general/fragmentos :: header}"></header>
+<div th:replace="~{general/fragmentos :: toast}"></div>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-tags me-2"></i>Gestión de Roles</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRol"
+                onclick="limpiarFormRol()">
+            <i class="fas fa-plus me-1"></i>Nuevo Rol
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre del Rol</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${roles}">
+                        <td th:text="${r.idRol}"></td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                  th:classappend="${r.nombre == 'ADMIN'} ? 'bg-danger' : (${r.nombre == 'ORGANIZADOR'} ? 'bg-warning text-dark' : 'bg-success')"
+                                  th:text="${r.nombre}"></span>
+                        </td>
+                        <td class="text-center">
+                            <a th:href="@{/rol/modificar/{id}(id=${r.idRol})}"
+                               class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form th:action="@{/rol/eliminar}" method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar este rol?')">
+                                <input type="hidden" name="idRol" th:value="${r.idRol}"/>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(roles)}">
+                        <td colspan="3" class="text-center text-muted py-3">No hay roles registrados.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal crear/editar rol -->
+<div class="modal fade" id="modalRol" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#1a237e; color:white;">
+                <h5 class="modal-title"><i class="fas fa-tag me-2"></i>Rol</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/rol/guardar}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="idRol" th:value="${rolNuevo.idRol}"/>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre del Rol</label>
+                        <input type="text" name="nombre" class="form-control"
+                               th:value="${rolNuevo.nombre}" placeholder="Ej: ADMIN" required/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Si viene un rol para editar, abrir modal automáticamente
+    var rolId = /*[[${rolNuevo.idRol}]]*/ null;
+    if (rolId != null) {
+        new bootstrap.Modal(document.getElementById('modalRol')).show();
+    }
+    function limpiarFormRol() {
+        document.querySelector('#modalRol input[name="idRol"]').value = '';
+        document.querySelector('#modalRol input[name="nombre"]').value = '';
+    }
+</script>
+
+<footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>
